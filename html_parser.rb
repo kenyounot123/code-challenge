@@ -1,62 +1,56 @@
-# Given a html file we want to parse the html file and extract data returning it in a json/yml format with the fields:
-# { 
-#   "paintings": [
-#     {
-#       "name": string
-#       "extensions": date[]
-#       "link": string[] 
-#     }
-#   ],
-#   painting_thunbnails : []
-# }
-# html_file = File.open("files/van-gogh-paintings.html") { |f| Nokogiri::HTML(f) }
-
-# images = html_file.xpath("//img")
-
-# puts images
-
 require 'nokogiri'
+require_relative 'image_map'
 
 class HtmlParser
-  attr_accessor :parsed_document
-  attr_reader :carousel_images
+  BASE_URL = "https://www.google.com".freeze
 
-  private 
+  attr_reader :parsed_document
+  attr_reader :carousel_items
+  attr_reader :image_map
 
   def initialize(html_file)
     @parsed_document = File.open(html_file) { |f| Nokogiri::HTML(f) }
+    @image_map = ImageMap.new(parsed_document).to_h
   end
-
-  def carousel_images
-    # Returns the images in the carousel in an array
-    parsed_document.xpath("//g-scrolling-carousel")[0]
-  end
-
-  def carousel_image_names
-    # Returns the names of the images in the carousel in an array of strings
-  end
-
-  def carousel_image_extensions
-    # Returns the extensions of the images in the carousel in an array of dates
-  end
-
-  def carousel_image_links
-    # Returns the links of the images in the carousel in an array of string urls
-  end
-
-  public
 
   def execute
-    # Returns the json/yml formatted data
-    data = {
-      items: []
+    fetch_carousel_items
+    result = { artworks: [] }
+    result[:artworks] = carousel_items.map { |item| parse_carousel_item(item) }
+    puts result
+  end
+
+  private
+
+  def fetch_carousel_items
+    @carousel_items = parsed_document
+      .xpath("//g-scrolling-carousel")
+      .css('a.klitem')
+  end
+
+  def parse_carousel_item(carousel_item)
+    {
+      name: name(carousel_item),
+      extensions: extensions(carousel_item),
+      link: link(carousel_item),
+      image: src(carousel_item)
     }
+  end
 
-    carousel_images.each do |image|
+  def name(carousel_item)
+    carousel_item['title'].split(" ")[0...-1].join(" ")
+  end
 
-    end
+  def extensions(carousel_item)
+    carousel_item.css('div.ellip.klmeta')&.children.map(&:text)
+  end
 
-    data.to_json
+  def link(carousel_item)
+    BASE_URL + carousel_item['href']
+  end
+
+  def src(carousel_item)
+    image_map[carousel_item.at_css('img')['id']]
   end
 
 end
