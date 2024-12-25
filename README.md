@@ -1,28 +1,32 @@
-# Extract Van Gogh Paintings Code Challenge
+# SerpApi Code Challenge
 
-Goal is to extract a list of Van Gogh paintings from the attached Google search results page.
+This is a solution to the SerpApi Code Challenge.
+Creates a class `GoogleHtmlParser` that can be used to scrape Google search results pages and then saves the results to a JSON file.
 
-![Van Gogh paintings](https://github.com/serpapi/code-challenge/blob/master/files/van-gogh-paintings.png?raw=true "Van Gogh paintings")
+- `scraper.rb` is the file that executes the scraper.
+- `document_parser.rb` is the parent class to handle the demo mode logic and the parsing of the HTML file.
+- `google_html_parser.rb` is the class that encapsulates the logic to parse the Google search results page.
+- `carousel_item_parser.rb` is the class that parses the carousel items and extracts the name, link, image, and extensions.
+- `image_map.rb` is the class that creates the hash mapping image id to image url from the HTML file.
 
-## Instructions
+To run tests:
+```
+bundle install
+bundle exec rspec
+```
 
-This is already fully supported on SerpApi. ([relevant test], [html file], [sample json], and [expected array].)
-Try to come up with your own solution and your own test.
-Extract the painting `name`, `extensions` array (date), and Google `link` in an array.
+To run the scraper:
+```
+bundle install
+ruby scraper.rb
+```
 
-Fork this repository and make a PR when ready.
+The demo mode is set to true if the file being scraped is `van-gogh-paintings.html`. which is the test file provided in the challenge.
+I found searched up two other similar result pages to test the scraper against. The demo mode is needed to differentiate between the test file and the other two because they have different layouts.
 
-Programming language wise, Ruby (with RSpec tests) is strongly suggested but feel free to use whatever you feel like.
+# Challenges
 
-Parse directly the HTML result page ([html file]) in this repository. No extra HTTP requests should be needed for anything.
-
-[relevant test]: https://github.com/serpapi/test-knowledge-graph-desktop/blob/master/spec/knowledge_graph_claude_monet_paintings_spec.rb
-[sample json]: https://raw.githubusercontent.com/serpapi/code-challenge/master/files/van-gogh-paintings.json
-[html file]: https://raw.githubusercontent.com/serpapi/code-challenge/master/files/van-gogh-paintings.html
-[expected array]: https://raw.githubusercontent.com/serpapi/code-challenge/master/files/expected-array.json
-
-Add also to your array the painting thumbnails present in the result page file (not the ones where extra requests are needed). 
-
-Test against 2 other similar result pages to make sure it works against different layouts. (Pages that contain the same kind of carrousel. Don't necessarily have to be paintings.)
-
-The suggested time for this challenge is 4 hours. But, you can take your time and work more on it if you want.
+1. Different layouts for the carousel items on certain search results pages.
+2. Getting used to the Nokogiri gem and its methods.
+3. Refactoring the code to be more readable and maintainable.
+4. Took a little longer than expected to get the hang of the gem and the methods.
